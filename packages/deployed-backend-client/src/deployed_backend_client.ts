@@ -72,9 +72,32 @@ export class DefaultDeployedBackendClient implements DeployedBackendClient {
   /**
    * Fetches all backend metadata for a specified backend
    */
+  /**
+   * Validates if the provided app ID exists in the configured region
+   * @param appId The app ID to validate
+   * @throws Error if the app ID doesn't exist in the configured region
+   */
+  private validateAppIdExists = async (appId: string): Promise<void> => {
+    // List all stacks to check if any stack exists with this app ID
+    const response = await this.listStacks(undefined, []);
+    const stacksWithAppId = response.stackSummaries.filter((stackSummary) => {
+      const backendId = BackendIdentifierConversions.fromStackName(stackSummary.StackName);
+      return backendId?.appId === appId;
+    });
+
+    if (stacksWithAppId.length === 0) {
+      throw new Error(`App ID '${appId}' does not exist in the configured region. Please check if the app ID exists and you are using the correct AWS region.`);
+    }
+  };
+
   getBackendMetadata = async (
     backendId: BackendIdentifier,
   ): Promise<BackendMetadata> => {
+    // Validate that the app ID exists before proceeding
+    if (backendId.appId) {
+      await this.validateAppIdExists(backendId.appId);
+    }
+    
     const stackName = BackendIdentifierConversions.toStackName(backendId);
     return this.buildBackendMetadata(stackName);
   };
