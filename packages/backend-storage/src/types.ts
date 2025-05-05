@@ -6,6 +6,7 @@ import {
   ResourceProvider,
 } from '@aws-amplify/plugin-types';
 import { AmplifyStorageProps } from './construct.js';
+import { LambdaStorageAuthorizerProps } from './lambda_storage_authorizer.js';
 import { AmplifyUserErrorOptions } from '@aws-amplify/platform-core';
 
 export type AmplifyStorageFactoryProps = Omit<
@@ -23,6 +24,20 @@ export type AmplifyStorageFactoryProps = Omit<
    * })
    */
   access?: StorageAccessGenerator;
+  
+  /**
+   * Define a custom lambda authorizer for handling storage access.
+   * This allows for implementing custom authorization logic for storage operations.
+   * @example
+   * export const storage = defineStorage({
+   *   customAuthorizer: {
+   *     function: defineFunction({
+   *       entry: './path/to/authorizer.ts'
+   *     })
+   *   }
+   * })
+   */
+  customAuthorizer?: LambdaStorageAuthorizerProps;
 };
 
 /**
