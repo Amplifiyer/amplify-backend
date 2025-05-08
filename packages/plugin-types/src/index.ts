@@ -26,3 +26,4 @@ export * from './amplify_resource_group_name.js';
 export * from './log_level.js';
 export * from './log_retention.js';
 export * from './sdk_profile_resolver.js';
+export * from './rest_api_resources.js';

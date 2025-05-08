@@ -1,0 +1,11 @@
+{
+  "extends": "../../api-extractor.base.json",
+  "mainEntryPointFilePath": "<projectFolder>/lib/index.d.ts",
+  "docModel": {
+    "enabled": true
+  },
+  "apiReport": {
+    "enabled": true,
+    "reportFolder": "<projectFolder>/"
+  }
+}

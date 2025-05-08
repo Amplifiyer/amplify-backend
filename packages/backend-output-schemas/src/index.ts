@@ -6,6 +6,7 @@ import { versionedStackOutputSchema } from './stack/index.js';
 import { versionedCustomOutputSchema } from './custom';
 import { versionedFunctionOutputSchema } from './function/index.js';
 import { versionedAIConversationOutputSchema } from './ai/conversation/index.js';
+import { restApiOutputSchema } from './rest_api.js';
 
 /**
  * The auth, graphql and storage exports here are duplicated from the submodule exports in the package.json file
@@ -100,6 +101,20 @@ export * from './ai/conversation/index.js';
 export const aiConversationOutputKey = 'AWS::Amplify::AI::Conversation';
 
 /**
+ * ---------- REST API exports ----------
+ */
+
+/**
+ * re-export the REST API output schema
+ */
+export * from './rest_api.js';
+
+/**
+ * Expected key that REST API output is stored under
+ */
+export const restApiOutputKey = 'AWS::Amplify::RestApi';
+
+/**
  * ---------- Unified exports ----------
  */
 
@@ -115,6 +130,7 @@ export const unifiedBackendOutputSchema = z.object({
   [customOutputKey]: versionedCustomOutputSchema.optional(),
   [functionOutputKey]: versionedFunctionOutputSchema.optional(),
   [aiConversationOutputKey]: versionedAIConversationOutputSchema.optional(),
+  [restApiOutputKey]: restApiOutputSchema.optional(),
 });
 /**
  * This type is a subset of the BackendOutput type that is exposed by the platform.
