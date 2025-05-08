@@ -1,6 +1,6 @@
 # @aws-amplify/backend-rest-api
 
-This package provides REST API support for AWS Amplify Gen2 applications.
+This package provides REST API support for AWS Amplify Gen 2 applications.
 
 ## Installation
 
@@ -13,32 +13,28 @@ npm install @aws-amplify/backend-rest-api
 ```typescript
 import { defineBackend } from '@aws-amplify/backend';
 import { defineRestApi } from '@aws-amplify/backend-rest-api';
+import { defineAuth } from '@aws-amplify/backend-auth';
 
-const api = defineRestApi({
-  routes: {
-    '/items': {
-      GET: {
-        function: myFunction
-      },
-      POST: {
-        function: myFunction
-      }
-    },
-    '/items/{id}': {
-      GET: {
-        function: myFunction
-      },
-      PUT: {
-        function: myFunction
-      },
-      DELETE: {
-        function: myFunction
-      }
-    }
-  }
+const auth = defineAuth({
+  // auth configuration
 });
 
-const backend = defineBackend({
+const api = defineRestApi({
+  // REST API configuration
+});
+
+export const backend = defineBackend({
+  auth,
   api
 });
 ```
+
+## Features
+
+1. Define REST APIs for your Amplify Gen 2 application
+2. Use Amplify Auth (via `defineAuth`) to authorize requests
+3. REST API URL is included in the Amplify outputs file for client configuration
+
+## Documentation
+
+For more information, see the [Amplify Documentation](https://docs.amplify.aws/gen2/build-a-backend/rest-api/).

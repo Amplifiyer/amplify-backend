@@ -87,20 +87,6 @@ export * from './function/index.js';
 export const functionOutputKey = 'AWS::Amplify::Function';
 
 /**
- * ---------- AI conversation exports ----------
- */
-
-/**
- * re-export the AI conversation output schema
- */
-export * from './ai/conversation/index.js';
-
-/**
- * Expected key that AI conversation output is stored under
- */
-export const aiConversationOutputKey = 'AWS::Amplify::AI::Conversation';
-
-/**
  * ---------- REST API exports ----------
  */
 
@@ -113,6 +99,20 @@ export * from './rest-api/index.js';
  * Expected key that REST API output is stored under
  */
 export const restApiOutputKey = 'AWS::Amplify::RestApi';
+
+/**
+ * ---------- AI conversation exports ----------
+ */
+
+/**
+ * re-export the AI conversation output schema
+ */
+export * from './ai/conversation/index.js';
+
+/**
+ * Expected key that AI conversation output is stored under
+ */
+export const aiConversationOutputKey = 'AWS::Amplify::AI::Conversation';
 
 /**
  * ---------- Unified exports ----------

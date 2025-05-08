@@ -1,16 +1,26 @@
 import { z } from 'zod';
-import { restApiOutputSchemaV1, RestApiOutputV1 } from './v1.js';
+import { versionedSchema } from '../versioned_schema.js';
 
 /**
- * Schema for versioned REST API output
+ * Schema for REST API outputs
  */
-export const versionedRestApiOutputSchema = z.discriminatedUnion('version', [
-  restApiOutputSchemaV1
-]);
+export const restApiOutputSchema = z.object({
+  restApiUrl: z.string(),
+  restApiId: z.string(),
+  restApiRootResourceId: z.string(),
+});
 
 /**
- * Type for versioned REST API output
+ * Type for REST API outputs
  */
-export type RestApiOutput = RestApiOutputV1;
+export type RestApiOutput = z.infer<typeof restApiOutputSchema>;
 
-export * from './v1.js';
+/**
+ * Versioned schema for REST API outputs
+ */
+export const versionedRestApiOutputSchema = versionedSchema(restApiOutputSchema);
+
+/**
+ * Type for versioned REST API outputs
+ */
+export type VersionedRestApiOutput = z.infer<typeof versionedRestApiOutputSchema>;

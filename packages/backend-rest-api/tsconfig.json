@@ -1,19 +1,22 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "rootDir": "src",
-    "outDir": "lib"
+    "rootDir": "./src",
+    "outDir": "./lib"
   },
   "include": ["src"],
   "references": [
     {
-      "path": "../plugin-types"
+      "path": "../backend-output-schemas"
+    },
+    {
+      "path": "../backend-output-storage"
     },
     {
       "path": "../platform-core"
     },
     {
-      "path": "../backend-output-schemas"
+      "path": "../plugin-types"
     }
   ]
 }
