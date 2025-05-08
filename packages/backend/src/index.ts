@@ -24,3 +24,6 @@ export { defineStorage } from '@aws-amplify/backend-storage';
 
 // function
 export { defineFunction } from '@aws-amplify/backend-function';
+
+// rest-api
+export { defineRestApi } from '@aws-amplify/backend-rest-api';
