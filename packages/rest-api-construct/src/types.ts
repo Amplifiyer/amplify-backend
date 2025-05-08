@@ -1,26 +1,50 @@
 import { 
-  AuthConfig, 
-  EndpointConfig, 
-  HttpMethod, 
-  PathConfig, 
-  RestApiProps as ConstructRestApiProps 
-} from '@aws-amplify/rest-api-construct';
+  AuthorizationType, 
+  CognitoUserPoolsAuthorizer, 
+  IAuthorizer, 
+  LambdaIntegration, 
+  MethodOptions, 
+  MockIntegration, 
+  PassthroughBehavior 
+} from 'aws-cdk-lib/aws-apigateway';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
-import { ConstructFactory } from '@aws-amplify/plugin-types';
 
 /**
- * Type for a function that can be used as an integration
+ * Authentication configuration for REST API endpoints
  */
-export type FunctionIntegration = ConstructFactory<{ resources: { lambda: IFunction } }>;
+export type AuthConfig = {
+  /**
+   * Allow unauthenticated/guest access to this endpoint
+   * @default false
+   */
+  allowGuests?: boolean;
+  
+  /**
+   * Require authentication for this endpoint
+   * @default true
+   */
+  requireAuthentication?: boolean;
+  
+  /**
+   * Restrict access to specific Cognito user pool groups
+   * If specified, only users in these groups can access the endpoint
+   */
+  groups?: string[];
+};
+
+/**
+ * HTTP methods supported by the REST API
+ */
+export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'OPTIONS' | 'HEAD' | 'ANY';
 
 /**
  * Integration type for REST API endpoints
  */
-export type EndpointIntegrationProps = {
+export type EndpointIntegration = {
   /**
    * Lambda function to integrate with
    */
-  function?: FunctionIntegration;
+  function?: IFunction;
   
   /**
    * Mock integration response
@@ -42,7 +66,7 @@ export type EndpointIntegrationProps = {
 /**
  * Configuration for a REST API endpoint
  */
-export type EndpointConfigProps = {
+export type EndpointConfig = {
   /**
    * HTTP method for the endpoint
    */
@@ -56,21 +80,21 @@ export type EndpointConfigProps = {
   /**
    * Integration for the endpoint
    */
-  integration: EndpointIntegrationProps;
+  integration: EndpointIntegration;
 };
 
 /**
  * Configuration for a REST API path
  */
-export type PathConfigProps = {
+export type PathConfig = {
   /**
    * Endpoints for this path
    */
-  endpoints: EndpointConfigProps[];
+  endpoints: EndpointConfig[];
 };
 
 /**
- * Properties for the REST API
+ * Properties for the REST API construct
  */
 export interface RestApiProps {
   /**
@@ -86,7 +110,7 @@ export interface RestApiProps {
   /**
    * Configuration for API paths and endpoints
    */
-  paths: Record<string, PathConfigProps>;
+  paths: Record<string, PathConfig>;
   
   /**
    * Default authentication configuration for all endpoints

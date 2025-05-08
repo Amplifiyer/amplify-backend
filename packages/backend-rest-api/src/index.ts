@@ -1,3 +1,2 @@
-export { defineRestApi } from './factory.js';
-export { RestApiResources, AmplifyRestApiProps } from './construct.js';
+export { BackendRestApi, defineRestApi } from './factory.js';
 export * from './types.js';

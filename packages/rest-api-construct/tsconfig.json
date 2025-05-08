@@ -8,8 +8,6 @@
   "references": [
     { "path": "../plugin-types" },
     { "path": "../backend-output-schemas" },
-    { "path": "../backend-output-storage" },
-    { "path": "../platform-core" },
-    { "path": "../rest-api-construct" }
+    { "path": "../backend-output-storage" }
   ]
 }
