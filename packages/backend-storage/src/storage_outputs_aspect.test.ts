@@ -8,6 +8,7 @@ import { App, Stack } from 'aws-cdk-lib';
 import { IConstruct } from 'constructs';
 import { AmplifyUserError } from '@aws-amplify/platform-core';
 import { StorageAccessDefinitionOutput } from './private_types.js';
+import { Function, InlineCode, Runtime } from 'aws-cdk-lib/aws-lambda';
 
 void describe('StorageOutputsAspect', () => {
   let app: App;
@@ -172,6 +173,44 @@ void describe('StorageOutputsAspect', () => {
           paths: accessDefinition,
         }),
       );
+    });
+
+    void it('should include custom authorizer information if configured', () => {
+      const node = new AmplifyStorage(stack, 'test', { name: 'testName' });
+      
+      // Create a Lambda function to use as authorizer
+      const authorizerFunction = new Function(stack, 'authorizerFunction', {
+        code: new InlineCode('testCode'),
+        handler: 'test.handler',
+        runtime: Runtime.NODEJS_LATEST,
+      });
+      
+      // Add the authorizer to the storage
+      node.addAuthorizer(authorizerFunction, 600);
+      
+      aspect = new StorageOutputsAspect(outputStorageStrategy);
+      aspect.visit(node);
+
+      // Check that the authorizer info is included in the default output
+      assert.equal(
+        addBackendOutputEntryMock.mock.calls[0].arguments[0],
+        'AWS::Amplify::Storage',
+      );
+      
+      const defaultOutput = addBackendOutputEntryMock.mock.calls[0].arguments[1];
+      assert.ok(defaultOutput.payload.authorizer);
+      assert.equal(defaultOutput.payload.authorizer.function.name, authorizerFunction.functionName);
+      assert.equal(defaultOutput.payload.authorizer.function.arn, authorizerFunction.functionArn);
+      assert.equal(defaultOutput.payload.authorizer.timeToLiveInSeconds, 600);
+      
+      // Check that the authorizer info is included in the bucket-specific output
+      const bucketOutput = JSON.parse(
+        appendToBackendOutputListMock.mock.calls[0].arguments[1].payload.buckets
+      );
+      assert.ok(bucketOutput.authorizer);
+      assert.equal(bucketOutput.authorizer.function.name, authorizerFunction.functionName);
+      assert.equal(bucketOutput.authorizer.function.arn, authorizerFunction.functionArn);
+      assert.equal(bucketOutput.authorizer.timeToLiveInSeconds, 600);
     });
   });
 

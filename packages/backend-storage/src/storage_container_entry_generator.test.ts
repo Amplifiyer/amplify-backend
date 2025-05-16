@@ -14,6 +14,7 @@ import {
   GenerateContainerEntryProps,
   ResourceProvider,
   SsmEnvironmentEntriesGenerator,
+  AmplifyFunction,
 } from '@aws-amplify/plugin-types';
 import { App, Stack } from 'aws-cdk-lib';
 import { StorageAccessOrchestratorFactory } from './storage_access_orchestrator.js';
@@ -191,6 +192,100 @@ void describe('StorageGenerator', () => {
           ],
         },
       });
+    });
+
+    void it('configures custom authorizer if defined', () => {
+      const stubAuthorizerFunction: ConstructFactory<AmplifyFunction> = {
+        getInstance: () => {
+          const testFunction = new Function(stack, 'authorizerFunction', {
+            code: new InlineCode('testCode'),
+            handler: 'test.handler',
+            runtime: Runtime.NODEJS_LATEST,
+          });
+
+          return {
+            resources: {
+              lambda: testFunction,
+              cfnResources: {
+                cfnFunction: testFunction.node.tryFindChild(
+                  'Resource',
+                ) as CfnFunction,
+              },
+            },
+          };
+        },
+      };
+
+      const storageGenerator = new StorageContainerEntryGenerator(
+        {
+          name: 'testName',
+          authorizer: {
+            function: stubAuthorizerFunction,
+            timeToLiveInSeconds: 600,
+          },
+        },
+        getInstanceProps,
+        new StorageAccessOrchestratorFactory(),
+      );
+
+      const storageInstance = storageGenerator.generateContainerEntry(
+        generateContainerEntryProps,
+      ) as AmplifyStorage;
+
+      // Verify the authorizer was added to the storage instance
+      assert.ok(storageInstance.resources.authorizer);
+      assert.equal(storageInstance.resources.authorizer?.timeToLiveInSeconds, 600);
+      
+      // Verify the Lambda function was created
+      const template = Template.fromStack(stack);
+      template.resourceCountIs('AWS::Lambda::Function', 1);
+      template.hasResourceProperties('AWS::Lambda::Function', {
+        Handler: 'test.handler',
+        Runtime: 'nodejs20.x',
+      });
+    });
+
+    void it('uses default TTL when not specified for authorizer', () => {
+      const stubAuthorizerFunction: ConstructFactory<AmplifyFunction> = {
+        getInstance: () => {
+          const testFunction = new Function(stack, 'authorizerFunction', {
+            code: new InlineCode('testCode'),
+            handler: 'test.handler',
+            runtime: Runtime.NODEJS_LATEST,
+          });
+
+          return {
+            resources: {
+              lambda: testFunction,
+              cfnResources: {
+                cfnFunction: testFunction.node.tryFindChild(
+                  'Resource',
+                ) as CfnFunction,
+              },
+            },
+          };
+        },
+      };
+
+      const storageGenerator = new StorageContainerEntryGenerator(
+        {
+          name: 'testName',
+          authorizer: {
+            function: stubAuthorizerFunction,
+            // No timeToLiveInSeconds specified
+          },
+        },
+        getInstanceProps,
+        new StorageAccessOrchestratorFactory(),
+      );
+
+      const storageInstance = storageGenerator.generateContainerEntry(
+        generateContainerEntryProps,
+      ) as AmplifyStorage;
+
+      // Verify the authorizer was added with default TTL (300 seconds)
+      assert.ok(storageInstance.resources.authorizer);
+      assert.equal(storageInstance.resources.authorizer?.timeToLiveInSeconds, 300);
     });
   });
 });

@@ -13,6 +13,7 @@ import {
   FunctionResources,
   ResourceProvider,
   StackProvider,
+  AmplifyFunction,
 } from '@aws-amplify/plugin-types';
 import { StorageOutput } from '@aws-amplify/backend-output-schemas';
 import { RemovalPolicy, Stack } from 'aws-cdk-lib';
@@ -21,6 +22,7 @@ import { fileURLToPath } from 'node:url';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { S3EventSourceV2 } from 'aws-cdk-lib/aws-lambda-event-sources';
 import { StorageAccessDefinitionOutput } from './private_types.js';
+import { LambdaAuthorizerProps } from './types.js';
 
 // Be very careful editing this value. It is the string that is used to attribute stacks to Amplify Storage in BI metrics
 const storageStackType = 'storage-S3';
@@ -63,12 +65,21 @@ export type AmplifyStorageProps = {
       ConstructFactory<ResourceProvider<FunctionResources>>
     >
   >;
+  
+  /**
+   * Custom lambda authorizer for storage access
+   */
+  authorizer?: LambdaAuthorizerProps;
 };
 
 export type StorageResources = {
   bucket: IBucket;
   cfnResources: {
     cfnBucket: CfnBucket;
+  };
+  authorizer?: {
+    function: IFunction;
+    timeToLiveInSeconds: number;
   };
 };
 
@@ -154,5 +165,15 @@ export class AmplifyStorage
    */
   addAccessDefinition = (accessOutput: StorageAccessDefinitionOutput) => {
     this.accessDefinition = accessOutput;
+  };
+
+  /**
+   * Add custom lambda authorizer to storage
+   */
+  addAuthorizer = (authorizerFunction: IFunction, timeToLiveInSeconds: number) => {
+    this.resources.authorizer = {
+      function: authorizerFunction,
+      timeToLiveInSeconds,
+    };
   };
 }

@@ -87,26 +87,56 @@ export class StorageOutputsAspect implements IAspect {
     isDefault: boolean = false,
     node: AmplifyStorage,
   ): void => {
+    // Create default storage output
     if (isDefault) {
-      outputStorageStrategy.addBackendOutputEntry(storageOutputKey, {
+      const defaultOutput: StorageOutput = {
         version: '1',
         payload: {
           storageRegion: Stack.of(node).region,
           bucketName: node.resources.bucket.bucketName,
         },
-      });
+      };
+
+      // Add authorizer information to default storage if available
+      if (node.resources.authorizer) {
+        defaultOutput.payload.authorizer = {
+          function: {
+            name: node.resources.authorizer.function.functionName,
+            arn: node.resources.authorizer.function.functionArn,
+          },
+          timeToLiveInSeconds: node.resources.authorizer.timeToLiveInSeconds,
+        };
+      }
+
+      outputStorageStrategy.addBackendOutputEntry(storageOutputKey, defaultOutput);
     }
+
+    // Create bucket-specific output
     const bucketsPayload: Record<
       string,
-      string | StorageAccessDefinitionOutput
+      string | StorageAccessDefinitionOutput | any
     > = {
       name: node.name,
       bucketName: node.resources.bucket.bucketName,
       storageRegion: Stack.of(node).region,
     };
+
+    // Add access definition if available
     if (node.accessDefinition) {
       bucketsPayload.paths = node.accessDefinition;
     }
+
+    // Add authorizer information if available
+    if (node.resources.authorizer) {
+      bucketsPayload.authorizer = {
+        function: {
+          name: node.resources.authorizer.function.functionName,
+          arn: node.resources.authorizer.function.functionArn,
+        },
+        timeToLiveInSeconds: node.resources.authorizer.timeToLiveInSeconds,
+      };
+    }
+
     // both default and non-default buckets should have the name, bucket name, and storage region stored in `buckets` field
     outputStorageStrategy.appendToBackendOutputList(storageOutputKey, {
       version: '1',
