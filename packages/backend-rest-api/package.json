@@ -1,0 +1,44 @@
+{
+  "name": "@aws-amplify/backend-rest-api",
+  "version": "0.1.0-alpha.0",
+  "type": "module",
+  "publishConfig": {
+    "access": "public"
+  },
+  "exports": {
+    ".": {
+      "types": "./lib/index.d.ts",
+      "import": "./lib/index.js",
+      "require": "./lib/index.js"
+    }
+  },
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "description": "REST API construct for Amplify Gen2",
+  "scripts": {
+    "update:api": "api-extractor run --local"
+  },
+  "dependencies": {
+    "@aws-amplify/backend-output-schemas": "^0.7.0",
+    "@aws-amplify/backend-output-storage": "^0.4.0",
+    "@aws-amplify/platform-core": "^0.5.0",
+    "@aws-amplify/plugin-types": "^0.9.0",
+    "aws-cdk-lib": "^2.127.0",
+    "constructs": "^10.3.0"
+  },
+  "peerDependencies": {
+    "@aws-amplify/backend-auth": "^0.5.0",
+    "@aws-amplify/backend-function": "^0.7.0"
+  },
+  "devDependencies": {
+    "@aws-amplify/backend-auth": "^0.5.0",
+    "@aws-amplify/backend-function": "^0.7.0",
+    "@aws-amplify/backend-platform-test-stubs": "^0.4.0"
+  },
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-backend.git",
+    "directory": "packages/backend-rest-api"
+  }
+}

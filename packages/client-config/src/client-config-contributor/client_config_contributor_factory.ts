@@ -13,6 +13,7 @@ import {
   VersionContributorV1_2,
   VersionContributorV1_3,
 } from './client_config_contributor_v1.js';
+import { RestApiClientConfigContributor } from './rest_api_client_config_contributor.js';
 
 import { ClientConfigContributor } from '../client-config-types/client_config_contributor.js';
 import { ModelIntrospectionSchemaAdapter } from '../model_introspection_schema_adapter.js';
@@ -42,6 +43,7 @@ export class ClientConfigContributorFactory {
         new Storage1_2(),
         new VersionContributor1_4(),
         new Custom1_1(),
+        new RestApiClientConfigContributor(),
       ],
 
       [ClientConfigVersionOption.V1_3]: [
@@ -50,6 +52,7 @@ export class ClientConfigContributorFactory {
         new Storage1_2(),
         new VersionContributorV1_3(),
         new Custom1_1(),
+        new RestApiClientConfigContributor(),
       ],
 
       [ClientConfigVersionOption.V1_2]: [
@@ -58,6 +61,7 @@ export class ClientConfigContributorFactory {
         new Storage1_2(),
         new VersionContributorV1_2(),
         new Custom1_1(),
+        new RestApiClientConfigContributor(),
       ],
 
       [ClientConfigVersionOption.V1_1]: [
@@ -66,6 +70,7 @@ export class ClientConfigContributorFactory {
         new Storage1_1(),
         new VersionContributorV1_1(),
         new Custom1_1(),
+        new RestApiClientConfigContributor(),
       ],
 
       // Except for storage and version, other contributors are same as V1
@@ -75,6 +80,7 @@ export class ClientConfigContributorFactory {
         new Storage1(),
         new VersionContributorV1(),
         new Custom1_1(),
+        new RestApiClientConfigContributor(),
       ],
 
       // Legacy config is derived from V1.4 (latest) of unified default config
@@ -84,6 +90,7 @@ export class ClientConfigContributorFactory {
         new Storage1_2(),
         new VersionContributor1_4(),
         new Custom1_1(),
+        new RestApiClientConfigContributor(),
       ],
     };
   }
