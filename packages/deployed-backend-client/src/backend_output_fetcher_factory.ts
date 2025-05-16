@@ -61,7 +61,7 @@ export class BackendOutputFetcherFactory {
     } else if (isBackendIdentifier(backendIdentifier)) {
       return new StackMetadataBackendOutputRetrievalStrategy(
         this.cfnClient,
-        new BackendIdentifierMainStackNameResolver(backendIdentifier),
+        new BackendIdentifierMainStackNameResolver(backendIdentifier, this.amplifyClient),
       );
     }
     return new StackMetadataBackendOutputRetrievalStrategy(

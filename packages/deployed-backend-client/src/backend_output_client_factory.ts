@@ -13,6 +13,7 @@ export enum BackendOutputClientErrorType {
   NO_STACK_FOUND = 'NoStackFound',
   CREDENTIALS_ERROR = 'CredentialsError',
   ACCESS_DENIED = 'AccessDenied',
+  INVALID_APP_ID = 'InvalidAppId',
 }
 /**
  * Error type for BackendOutputClientError
