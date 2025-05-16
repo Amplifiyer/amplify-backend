@@ -69,6 +69,16 @@ export const getBackendOutputWithErrorHandling = async (
             },
             error,
           );
+        case BackendOutputClientErrorType.INVALID_APP_ID:
+          throw new AmplifyUserError(
+            'InvalidAppIdError',
+            {
+              message: error.message,
+              resolution:
+                'Ensure the Amplify App ID specified is correct and exists in the configured region.',
+            },
+            error,
+          );
         default:
           throw error;
       }
