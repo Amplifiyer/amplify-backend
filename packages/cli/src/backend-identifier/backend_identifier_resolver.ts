@@ -1,4 +1,4 @@
-import { DeployedBackendIdentifier } from '@aws-amplify/deployed-backend-client';
+import { AppIdValidator, DeployedBackendIdentifier } from '@aws-amplify/deployed-backend-client';
 import { NamespaceResolver } from './local_namespace_resolver.js';
 import { BackendIdentifier } from '@aws-amplify/plugin-types';
 import { BackendIdentifierConversions } from '@aws-amplify/platform-core';
@@ -26,10 +26,19 @@ export class AppBackendIdentifierResolver implements BackendIdentifierResolver {
   /**
    * Instantiates BackendIdentifierResolver
    */
-  constructor(private readonly namespaceResolver: NamespaceResolver) {}
+  constructor(
+    private readonly namespaceResolver: NamespaceResolver,
+    private readonly appIdValidator?: AppIdValidator
+  ) {}
+  
   resolveDeployedBackendIdentifier = async (
     args: BackendIdentifierParameters,
   ): Promise<DeployedBackendIdentifier | undefined> => {
+    // Validate appId if provided and validator is available
+    if (args.appId && this.appIdValidator) {
+      await this.appIdValidator.validateAppId(args.appId);
+    }
+    
     if (args.stack) {
       return { stackName: args.stack };
     } else if (args.appId && args.branch) {
@@ -46,9 +55,15 @@ export class AppBackendIdentifierResolver implements BackendIdentifierResolver {
     }
     return undefined;
   };
+  
   resolveBackendIdentifier = async (
     args: BackendIdentifierParameters,
   ): Promise<BackendIdentifier | undefined> => {
+    // Validate appId if provided and validator is available
+    if (args.appId && this.appIdValidator) {
+      await this.appIdValidator.validateAppId(args.appId);
+    }
+    
     if (args.stack) {
       return BackendIdentifierConversions.fromStackName(args.stack);
     } else if (args.appId && args.branch) {

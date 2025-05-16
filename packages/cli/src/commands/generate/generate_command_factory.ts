@@ -8,7 +8,7 @@ import { LocalNamespaceResolver } from '../../backend-identifier/local_namespace
 import { ClientConfigGeneratorAdapter } from '../../client-config/client_config_generator_adapter.js';
 import { GenerateApiCodeAdapter } from './graphql-client-code/generate_api_code_adapter.js';
 import { FormGenerationHandler } from '../../form-generation/form_generation_handler.js';
-import { BackendOutputClientFactory } from '@aws-amplify/deployed-backend-client';
+import { AppIdValidator, BackendOutputClientFactory } from '@aws-amplify/deployed-backend-client';
 import { SandboxBackendIdResolver } from '../sandbox/sandbox_id_resolver.js';
 import { CommandMiddleware } from '../../command_middleware.js';
 import { BackendIdentifierResolverWithFallback } from '../../backend-identifier/backend_identifier_with_sandbox_fallback.js';
@@ -41,9 +41,12 @@ export const createGenerateCommand = (): CommandModule => {
   );
 
   const namespaceResolver = new LocalNamespaceResolver(new PackageJsonReader());
+  
+  // Create the AppIdValidator to validate app IDs
+  const appIdValidator = new AppIdValidator(amplifyClient);
 
   const backendIdentifierResolver = new BackendIdentifierResolverWithFallback(
-    new AppBackendIdentifierResolver(namespaceResolver),
+    new AppBackendIdentifierResolver(namespaceResolver, appIdValidator),
     new SandboxBackendIdResolver(namespaceResolver),
   );
 
