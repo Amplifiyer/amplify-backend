@@ -3,6 +3,7 @@ import { AmplifyStorage } from './construct.js';
 import { App, Stack } from 'aws-cdk-lib';
 import { Capture, Template } from 'aws-cdk-lib/assertions';
 import assert from 'node:assert';
+import { Function, InlineCode, Runtime } from 'aws-cdk-lib/aws-lambda';
 
 void describe('AmplifyStorage', () => {
   void it('creates a bucket', () => {
@@ -117,6 +118,28 @@ void describe('AmplifyStorage', () => {
           AccelerationStatus: 'Enabled',
         },
       });
+    });
+  });
+
+  void describe('custom authorizer', () => {
+    void it('adds custom authorizer to storage resources', () => {
+      const app = new App();
+      const stack = new Stack(app);
+      
+      const storage = new AmplifyStorage(stack, 'test', { name: 'testName' });
+      
+      const authorizerFunction = new Function(stack, 'authorizerFunction', {
+        code: new InlineCode('testCode'),
+        handler: 'test.handler',
+        runtime: Runtime.NODEJS_LATEST,
+      });
+      
+      storage.addAuthorizer(authorizerFunction, 600);
+      
+      // Verify the authorizer was added to the storage resources
+      assert.ok(storage.resources.authorizer);
+      assert.equal(storage.resources.authorizer?.function, authorizerFunction);
+      assert.equal(storage.resources.authorizer?.timeToLiveInSeconds, 600);
     });
   });
 });

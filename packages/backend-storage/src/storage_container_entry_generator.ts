@@ -12,6 +12,9 @@ import { StorageAccessPolicyFactory } from './storage_access_policy_factory.js';
 import { Tags } from 'aws-cdk-lib';
 import { TagName } from '@aws-amplify/platform-core';
 
+// Default TTL for custom authorizer cache
+const DEFAULT_AUTHORIZER_TTL_SECONDS = 300; // 5 minutes
+
 /**
  * Generates a single instance of storage resources
  */
@@ -40,6 +43,7 @@ export class StorageContainerEntryGenerator
 
     Tags.of(amplifyStorage).add(TagName.FRIENDLY_NAME, this.props.name);
 
+    // Add triggers if defined
     Object.entries(this.props.triggers || {}).forEach(
       ([triggerEvent, handlerFactory]) => {
         const events = [];
@@ -58,6 +62,19 @@ export class StorageContainerEntryGenerator
       },
     );
 
+    // Add custom authorizer if defined
+    if (this.props.authorizer) {
+      const authorizerFunction = this.props.authorizer.function.getInstance(
+        this.getInstanceProps
+      ).resources.lambda;
+      
+      const timeToLiveInSeconds = this.props.authorizer.timeToLiveInSeconds || 
+        DEFAULT_AUTHORIZER_TTL_SECONDS;
+      
+      amplifyStorage.addAuthorizer(authorizerFunction, timeToLiveInSeconds);
+    }
+
+    // Handle access configuration
     if (!this.props.access) {
       return amplifyStorage;
     }

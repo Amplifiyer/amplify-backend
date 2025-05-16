@@ -20,11 +20,20 @@ const pathSchema = z.record(
   ),
 );
 
+const authorizerSchema = z.object({
+  function: z.object({
+    name: z.string(),
+    arn: z.string(),
+  }),
+  timeToLiveInSeconds: z.number(),
+});
+
 const bucketSchema = z.object({
   name: z.string(),
   bucketName: z.string(),
   storageRegion: z.string(),
   paths: pathSchema.optional(),
+  authorizer: authorizerSchema.optional(),
 });
 
 export const storageOutputSchema = z.object({
@@ -33,5 +42,6 @@ export const storageOutputSchema = z.object({
     bucketName: z.string(),
     storageRegion: z.string(),
     buckets: z.string(z.array(bucketSchema)).optional(), // JSON serialized array of bucketSchema
+    authorizer: authorizerSchema.optional(), // Custom authorizer information
   }),
 });

@@ -4,9 +4,27 @@ import {
   ResourceAccessAcceptor,
   ResourceAccessAcceptorFactory,
   ResourceProvider,
+  AmplifyFunction,
 } from '@aws-amplify/plugin-types';
 import { AmplifyStorageProps } from './construct.js';
 import { AmplifyUserErrorOptions } from '@aws-amplify/platform-core';
+
+/**
+ * Props for Custom Lambda authorization on Storage.
+ */
+export type LambdaAuthorizerProps = {
+  /**
+   * The authorization lambda function that will determine access to storage paths.
+   * This function will receive context about the request and should return a policy document.
+   */
+  function: ConstructFactory<AmplifyFunction>;
+
+  /**
+   * How long the results are cached in seconds.
+   * @default 300 (5 minutes)
+   */
+  timeToLiveInSeconds?: number;
+};
 
 export type AmplifyStorageFactoryProps = Omit<
   AmplifyStorageProps,
@@ -23,6 +41,21 @@ export type AmplifyStorageFactoryProps = Omit<
    * })
    */
   access?: StorageAccessGenerator;
+
+  /**
+   * Define custom lambda authorizer for storage access.
+   * This authorizer will be invoked to determine if a user has access to specific storage paths.
+   * @example
+   * import { authorizerHandler } from '../functions/storage-authorizer/resource.ts'
+   * 
+   * export const storage = defineStorage({
+   *   authorizer: {
+   *     function: authorizerHandler,
+   *     timeToLiveInSeconds: 300
+   *   }
+   * })
+   */
+  authorizer?: LambdaAuthorizerProps;
 };
 
 /**
