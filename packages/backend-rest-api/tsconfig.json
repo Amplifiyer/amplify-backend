@@ -1,0 +1,27 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "lib",
+    "rootDir": "src"
+  },
+  "references": [
+    {
+      "path": "../backend-output-schemas"
+    },
+    {
+      "path": "../backend-output-storage"
+    },
+    {
+      "path": "../platform-core"
+    },
+    {
+      "path": "../plugin-types"
+    },
+    {
+      "path": "../backend-auth"
+    },
+    {
+      "path": "../backend-function"
+    }
+  ]
+}
